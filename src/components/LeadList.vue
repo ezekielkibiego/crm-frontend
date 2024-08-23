@@ -1,24 +1,31 @@
-<!-- src/components/LeadList.vue -->
 <template>
     <div>
-      <h2>Leads</h2>
-      <table>
-        <thead>
+      <h2 class="text-2xl font-bold mb-4">Leads</h2>
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
           <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Lead Status</th>
-            <th>Company Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lead Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="bg-white divide-y divide-gray-200">
           <tr v-for="lead in leads" :key="lead.id">
-            <td>{{ lead.name }}</td>
-            <td>{{ lead.email }}</td>
-            <td>{{ lead.phone }}</td>
-            <td>{{ lead.leadStatus }}</td>
-            <td>{{ lead.companyName }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ lead.name }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ lead.email }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ lead.phone }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ lead.address }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ lead.companyName }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ lead.leadStatus }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ lead.customerName }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <button @click="editLead(lead)" class="text-indigo-600 hover:text-indigo-900">Edit</button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -27,14 +34,28 @@
   
   <script>
   export default {
-    data() {
-      return {
-        leads: [], // Replace with API call
-      }
+    props: {
+      leads: {
+        type: Array,
+        required: true,
+      },
+      customers: {
+        type: Array,
+        required: true,
+      },
     },
-    created() {
-      // Fetch leads from API
+    methods: {
+      editLead(lead) {
+        this.$emit('edit-lead', lead);
+      },
+      deleteLead(leadId) {
+        this.$emit('delete-lead', leadId);
+      },
     },
-  }
+  };
   </script>
+  
+  <style scoped>
+  /* Scoped styles can be added here if necessary */
+  </style>
   
