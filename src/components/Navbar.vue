@@ -19,7 +19,5 @@
   };
   </script>
   
-  <style scoped>
-  /* Additional styles for the Navbar if needed */
-  </style>
+
   

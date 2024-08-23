@@ -56,7 +56,3 @@
   };
   </script>
   
-  <style scoped>
-  /* Add any additional scoped CSS if needed */
-  </style>
-  
