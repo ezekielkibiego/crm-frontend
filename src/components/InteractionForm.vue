@@ -1,144 +1,129 @@
 <template>
-    <form @submit.prevent="submitInteraction" class="space-y-4">
-      <div>
-        <label for="type" class="block text-sm font-medium text-gray-700">Type:</label>
-        <input
-          id="type"
-          v-model="interaction.type"
-          type="text"
-          required
-          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        />
-      </div>
-  
-      <div>
-        <label for="description" class="block text-sm font-medium text-gray-700">Description:</label>
-        <textarea
-          id="description"
-          v-model="interaction.description"
-          rows="3"
-          required
-          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        ></textarea>
-      </div>
-  
-      <div>
-        <label for="leadId" class="block text-sm font-medium text-gray-700">Lead:</label>
-        <select
-          id="leadId"
-          v-model.number="interaction.leadId"
-          required
-          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        >
-          <option value="" disabled>Select a lead</option>
-          <option v-for="lead in leads" :key="lead.id" :value="lead.id">
-            {{ lead.name }}
-          </option>
-        </select>
-      </div>
-  
-      <div>
-        <label for="customerId" class="block text-sm font-medium text-gray-700">Customer:</label>
-        <select
-          id="customerId"
-          v-model.number="interaction.customerId"
-          required
-          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-        >
-          <option value="" disabled>Select a customer</option>
-          <option v-for="customer in customers" :key="customer.id" :value="customer.id">
-            {{ customer.name }}
-          </option>
-        </select>
-      </div>
-  
-      <button
-        type="submit"
-        class="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-      >
-        {{ isEditing ? 'Update Interaction' : 'Add Interaction' }}
-      </button>
-    </form>
+    <div>
+      <h2 class="text-2xl font-bold mb-4">{{ isEditing ? 'Edit Lead' : 'Add Lead' }}</h2>
+      <form @submit.prevent="handleSubmit">
+        <div class="mb-4">
+          <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+          <input
+            v-model="form.name"
+            id="name"
+            type="text"
+            required
+            class="p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div class="mb-4">
+          <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+          <input
+            v-model="form.email"
+            id="email"
+            type="email"
+            required
+            class="p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div class="mb-4">
+          <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+          <input
+            v-model="form.phone"
+            id="phone"
+            type="text"
+            class="p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div class="mb-4">
+          <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+          <input
+            v-model="form.address"
+            id="address"
+            type="text"
+            class="p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div class="mb-4">
+          <label for="companyName" class="block text-sm font-medium text-gray-700">Company Name</label>
+          <input
+            v-model="form.companyName"
+            id="companyName"
+            type="text"
+            class="p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div class="mb-4">
+          <label for="leadStatus" class="block text-sm font-medium text-gray-700">Lead Status</label>
+          <input
+            v-model="form.leadStatus"
+            id="leadStatus"
+            type="text"
+            class="p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div class="mb-4">
+          <label for="customerName" class="block text-sm font-medium text-gray-700">Customer</label>
+          <input
+            v-model="form.customerName"
+            id="customerName"
+            type="text"
+            class="p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Submit</button>
+      </form>
+    </div>
   </template>
   
   <script>
-  import { ref, watch } from 'vue';
-  
   export default {
     props: {
-      interaction: {
+      lead: {
         type: Object,
-        default: () => ({
-          type: '',
-          description: '',
-          customerId: null,
-          leadId: null,
-        }),
+        default: () => ({}),
       },
       isEditing: {
         type: Boolean,
         default: false,
       },
-      customers: {
-        type: Array,
-        default: () => [],
-      },
-      leads: {
-        type: Array,
-        default: () => [],
+    },
+    data() {
+      return {
+        form: {
+          name: '',
+          email: '',
+          phone: '',
+          address: '',
+          companyName: '',
+          leadStatus: '',
+          customerName: '',
+        },
+      };
+    },
+    watch: {
+      lead(newLead) {
+        if (this.isEditing) {
+          this.form = { ...newLead };
+        } else {
+          this.resetForm();
+        }
       },
     },
-    setup(props, { emit }) {
-      const interaction = ref({ ...props.interaction });
-  
-      // Watch for changes in props.interaction to update local state
-      watch(() => props.interaction, (newVal) => {
-        interaction.value = { ...newVal };
-      }, { immediate: true });
-  
-      // Function to submit the interaction form
-      const submitInteraction = async () => {
-        // Ensure leadId is set and is an integer
-        if (!interaction.value.leadId || isNaN(interaction.value.leadId)) {
-          alert('Please select a valid lead.');
-          return;
-        }
-  
-        // Set the current date and time
-        interaction.value.date = new Date().toISOString(); // ISO format: "2024-08-23T10:41:15.134Z"
-  
-        // Determine the URL and HTTP method based on whether we're editing
-        const url = props.isEditing
-          ? `http://localhost:3000/interactions/${interaction.value.id}`
-          : 'http://localhost:3000/interactions';
-  
-        const method = props.isEditing ? 'PATCH' : 'POST';
-  
-        try {
-          // Send the form data to the server
-          const response = await fetch(url, {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(interaction.value),
-          });
-  
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Failed to save interaction: ${errorData.message || response.statusText}`);
-          }
-  
-          // Emit event to notify parent component of successful submission
-          emit('interaction-submitted');
-        } catch (error) {
-          console.error('Submit Interaction Error:', error);
-          alert(`Error: ${error.message}`);
-        }
-      };
-  
-      return {
-        interaction,
-        submitInteraction,
-      };
+    methods: {
+      handleSubmit() {
+        // Logic to add or update lead
+        // After successful submission, reset the form
+        this.resetForm();
+        this.$emit('lead-added');
+      },
+      resetForm() {
+        this.form = {
+          name: '',
+          email: '',
+          phone: '',
+          address: '',
+          companyName: '',
+          leadStatus: '',
+          customerName: '',
+        };
+      },
     },
   };
   </script>
